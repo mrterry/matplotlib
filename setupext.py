@@ -428,6 +428,9 @@ class CheckFailed(Exception):
 class SetupPackage(object):
     optional = False
 
+    def __init__(self, *dependencies):
+        self.dependencies = dependencies
+
     def check(self):
         """
         Checks whether the dependencies are met.  Should raise a
@@ -452,7 +455,6 @@ class SetupPackage(object):
         `distutils.setup`.
         """
         return []
-
 
     def get_py_modules(self):
         """
@@ -485,6 +487,10 @@ class SetupPackage(object):
         package if it is not installed.
         """
         return []
+
+    def add_dep_flags(self, ext):
+        for dep in self.dependencies:
+            dep.add_flags(ext)
 
     def _check_for_pkg_config(self, package, include_file, min_version=None,
                               version=None):
@@ -974,9 +980,7 @@ class FT2Font(SetupPackage):
             'src/mplutils.cpp'
             ]
         ext = make_extension('matplotlib.ft2font', sources)
-        FreeType().add_flags(ext)
-        Numpy().add_flags(ext)
-        CXX().add_flags(ext)
+        self.add_dep_flags(ext)
         return ext
 
 
@@ -999,8 +1003,7 @@ class Png(SetupPackage):
         ext = make_extension('matplotlib._png', sources)
         pkg_config.setup_extension(
             ext, 'libpng', default_libraries=['png', 'z'])
-        Numpy().add_flags(ext)
-        CXX().add_flags(ext)
+        self.add_dep_flags(ext)
         return ext
 
 
@@ -1015,8 +1018,7 @@ class TTConv(SetupPackage):
             'ttconv/ttutil.cpp'
             ]
         ext = make_extension('matplotlib.ttconv', sources)
-        Numpy().add_flags(ext)
-        CXX().add_flags(ext)
+        self.add_dep_flags(ext)
         return ext
 
 
@@ -1031,9 +1033,7 @@ class Path(SetupPackage):
             ]
 
         ext = make_extension('matplotlib._path', sources)
-        Numpy().add_flags(ext)
-        LibAgg().add_flags(ext)
-        CXX().add_flags(ext)
+        self.add_dep_flags(ext)
         return ext
 
 
@@ -1045,9 +1045,7 @@ class Image(SetupPackage):
             'src/_image.cpp', 'src/mplutils.cpp'
             ]
         ext = make_extension('matplotlib._image', sources)
-        Numpy().add_flags(ext)
-        LibAgg().add_flags(ext)
-        CXX().add_flags(ext)
+        self.add_dep_flags(ext)
         return ext
 
 
@@ -1059,7 +1057,7 @@ class Contour(SetupPackage):
             "src/cntr.c"
             ]
         ext = make_extension('matplotlib._cntr', sources)
-        Numpy().add_flags(ext)
+        self.add_dep_flags(ext)
         return ext
 
 
@@ -1074,7 +1072,7 @@ class Delaunay(SetupPackage):
                    "delaunay_utils.cpp", "natneighbors.cpp"]
         sources = [os.path.join('lib/matplotlib/delaunay', s) for s in sources]
         ext = make_extension('matplotlib._delaunay', sources)
-        Numpy().add_flags(ext)
+        self.add_dep_flags(ext)
         return ext
 
 
@@ -1087,8 +1085,7 @@ class Tri(SetupPackage):
             "src/mplutils.cpp"
             ]
         ext = make_extension('matplotlib._tri', sources)
-        Numpy().add_flags(ext)
-        CXX().add_flags(ext)
+        self.add_dep_flags(ext)
         return ext
 
 
@@ -1211,10 +1208,7 @@ class BackendAgg(OptionalBackendPackage):
             "src/_backend_agg.cpp"
             ]
         ext = make_extension('matplotlib.backends._backend_agg', sources)
-        Numpy().add_flags(ext)
-        LibAgg().add_flags(ext)
-        FreeType().add_flags(ext)
-        CXX().add_flags(ext)
+        self.add_dep_flags(ext)
         return ext
 
 
@@ -1259,9 +1253,7 @@ class BackendTkAgg(OptionalBackendPackage):
 
         ext = make_extension('matplotlib.backends._tkagg', sources)
         self.add_flags(ext)
-        Numpy().add_flags(ext)
-        LibAgg().add_flags(ext)
-        CXX().add_flags(ext)
+        self.add_dep_flags(ext)
         return ext
 
     def query_tcltk(self):
@@ -1546,7 +1538,7 @@ class BackendGtk(OptionalBackendPackage):
             ]
         ext = make_extension('matplotlib.backends._backend_gdk', sources)
         self.add_flags(ext)
-        Numpy().add_flags(ext)
+        self.add_dep_flags(ext)
         return ext
 
     def add_flags(self, ext):
@@ -1632,9 +1624,7 @@ class BackendGtkAgg(BackendGtk):
             ]
         ext = make_extension('matplotlib.backends._gtkagg', sources)
         self.add_flags(ext)
-        LibAgg().add_flags(ext)
-        CXX().add_flags(ext)
-        Numpy().add_flags(ext)
+        self.add_dep_flags(ext)
         return ext
 
 
@@ -1810,9 +1800,7 @@ class BackendMacOSX(OptionalBackendPackage):
             ]
 
         ext = make_extension('matplotlib.backends._macosx', sources)
-        Numpy().add_flags(ext)
-        LibAgg().add_flags(ext)
-        CXX().add_flags(ext)
+        self.add_dep_flags(ext)
         ext.extra_link_args.extend(['-framework', 'Cocoa'])
         return ext
 
