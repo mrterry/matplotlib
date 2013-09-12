@@ -4,7 +4,6 @@ from distutils import sysconfig
 from distutils import version
 from distutils.core import Extension
 import glob
-import io
 import multiprocessing
 import os
 import re
@@ -749,19 +748,12 @@ class CXX(SetupPackage):
                     "Python 3.x.  Using local copy")
 
         self.__class__.found_external = True
-        old_stdout = sys.stdout
-        if PY3:
-            sys.stdout = io.StringIO()
-        else:
-            sys.stdout = io.BytesIO()
 
         try:
             import CXX
         except ImportError:
             self.__class__.found_external = False
             return "Couldn't import.  Using local copy."
-        finally:
-            sys.stdout = old_stdout
 
         try:
             return pkg_config.check_for_config('PyCXX',
