@@ -1818,7 +1818,7 @@ class DviPng(SetupPackage):
                                   stderr=subprocess.STDOUT)
             return "version %s" % output.splitlines()[1].decode().split()[-1]
         except (IndexError, ValueError, subprocess.CalledProcessError):
-            raise CheckFailed()
+            raise CheckFailed('failed to configure dvipng')
 
 
 class Ghostscript(SetupPackage):
@@ -1842,7 +1842,7 @@ class Ghostscript(SetupPackage):
                                       stderr=subprocess.STDOUT)
             return "version %s" % output.decode()[:-1]
         except (IndexError, ValueError, subprocess.CalledProcessError):
-            raise CheckFailed()
+            raise CheckFailed('failed to configure ghostscript')
 
 
 class LaTeX(SetupPackage):
@@ -1858,7 +1858,7 @@ class LaTeX(SetupPackage):
             match = re.search(pattern, line)
             return "version %s" % match.group(0)
         except (IndexError, ValueError, AttributeError, subprocess.CalledProcessError):
-            raise CheckFailed()
+            raise CheckFailed('failed to configure latex')
 
 
 class PdfToPs(SetupPackage):
@@ -1876,4 +1876,4 @@ class PdfToPs(SetupPackage):
         except (IndexError, ValueError, subprocess.CalledProcessError):
             pass
 
-        raise CheckFailed()
+        raise CheckFailed('Failed to configure pdftops')
