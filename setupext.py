@@ -224,11 +224,11 @@ def make_extension(name, files, *args, **kwargs):
 
 class Configurator(object):
     """
-    This is a class for communicating with pkg-config.
+    This is a class for communicating with a pkg-config like program.
     """
     def __init__(self, config_command):
         """
-        Determines whether pkg-config exists on this machine.
+        Determines whether config_command exists on this machine.
         """
         self.config_command = config_command
 
