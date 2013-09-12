@@ -58,8 +58,6 @@ else:
 # matplotlib build options, which can be altered using setup.cfg
 options = {
     'display_status': True,
-    'verbose': False,
-    'backend': None,
     'basedirlist': None
     }
 
@@ -71,11 +69,6 @@ if os.path.exists(setup_cfg):
 
     try:
         options['display_status'] = not config.getboolean("status", "suppress")
-    except:
-        pass
-
-    try:
-        options['backend'] = config.get("rc_options", "backend")
     except:
         pass
 
