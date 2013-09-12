@@ -56,30 +56,29 @@ else:
 
 
 # matplotlib build options, which can be altered using setup.cfg
-options = {
+OPTIONS = {
     'display_status': True,
-    'basedirlist': None
-    }
+    'basedirlist': None,
+}
 
 
 setup_cfg = os.environ.get('MPLSETUPCFG', 'setup.cfg')
 if os.path.exists(setup_cfg):
-    config = configparser.SafeConfigParser()
-    config.read(setup_cfg)
+    CONFIG = configparser.SafeConfigParser()
+    CONFIG.read(setup_cfg)
 
     try:
-        options['display_status'] = not config.getboolean("status", "suppress")
-    except:
+        OPTIONS['display_status'] = not CONFIG.getboolean("status", "suppress")
+    except configparser.Error:
         pass
 
     try:
-        options['basedirlist'] = [
-            x.strip() for x in
-            config.get("directories", "basedirlist").split(',')]
-    except:
+        dirs = config.get("directories", "basedirlist").split(',')
+        OPTIONS['basedirlist'] = [x.strip() for x in dirs]
+    except configparser.Error:
         pass
 else:
-    config = None
+    CONFIG = None
 
 
 def get_win32_compiler():
@@ -135,8 +134,8 @@ def get_base_dirs():
     """
     Returns a list of standard base directories on this platform.
     """
-    if options['basedirlist']:
-        return options['basedirlist']
+    if OPTIONS['basedirlist']:
+        return OPTIONS['basedirlist']
 
     basedir_map = {
         'win32': ['win32_static'],
@@ -159,7 +158,7 @@ def is_min_version(found, minversion):
 
 
 # Define the display functions only if display_status is True.
-if options['display_status']:
+if OPTIONS['display_status']:
     def print_line(char='='):
         print(char * 76)
 
@@ -497,7 +496,7 @@ class OptionalPackage(SetupPackage):
         or opted-out (False).
         """
         try:
-            return config.getboolean(self.config_category, self.name)
+            return CONFIG.getboolean(self.config_category, self.name)
         except:
             return "auto"
 
